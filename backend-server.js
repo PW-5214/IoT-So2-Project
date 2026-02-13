@@ -29,6 +29,12 @@ app.use(cors({
 }));
 app.use(bodyParser.json());
 
+// Request logging middleware
+app.use((req, res, next) => {
+  console.log(`📨 ${req.method} ${req.path} from ${req.ip}`);
+  next();
+});
+
 // MongoDB Connection
 mongoose.connect(MONGODB_URI)
   .then(() => {
@@ -628,6 +634,7 @@ app.get('/', (req, res) => {
 
 // Add a simple root health check for Railway
 app.get('/healthz', (req, res) => {
+  console.log('💚 Health check received from:', req.ip);
   res.status(200).send('OK');
 });
 
@@ -655,20 +662,32 @@ if (process.env.NODE_ENV === 'production') {
   });
 }
 
-// Start server - Railway requires explicit 0.0.0.0 binding
-const server = app.listen(PORT, '0.0.0.0', () => {
+// Start server - Railway requires listening on PORT env variable
+console.log('🔧 Starting server setup...');
+console.log('🔧 PORT:', PORT);
+console.log('🔧 NODE_ENV:', process.env.NODE_ENV);
+console.log('🔧 Dist path:', join(__dirname, 'dist'));
+
+const server = app.listen(PORT, () => {
+  const address = server.address();
   console.log('╔════════════════════════════════════════════╗');
   console.log('║   🚀 Sensor Backend Server Started!       ║');
   console.log('║      (MongoDB Atlas Integrated)            ║');
   console.log('╚════════════════════════════════════════════╝');
   console.log(`📡 Server listening on port: ${PORT}`);
-  console.log(`📡 Binding address: 0.0.0.0:${PORT}`);
+  console.log(`📡 Actual address:`, JSON.stringify(address));
   console.log(`📊 API: /api/sensors/current`);
   console.log(`💚 Health check: /api/health`);
+  console.log(`💚 Simple health: /healthz`);
   console.log(`🗄️  Database: ${MONGODB_URI ? 'Connected' : 'NOT CONFIGURED'}`);
   console.log(`🌍 Environment: ${process.env.NODE_ENV || 'development'}`);
   console.log('\n⏳ Ready to receive requests...\n');
+  
+  // Log server is ready
+  console.log('✅ Server is READY and LISTENING');
 });
+
+console.log('🔧 Listen called, waiting for callback...');
 
 // Error handling for server
 server.on('error', (error) => {
