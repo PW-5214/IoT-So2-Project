@@ -18,7 +18,6 @@ const __dirname = dirname(__filename);
 
 const app = express();
 const PORT = process.env.PORT || 3001;
-const HOST = process.env.RAILWAY_ENVIRONMENT ? '0.0.0.0' : (process.env.HOST || '0.0.0.0');
 const MONGODB_URI = process.env.MONGODB_URI;
 
 // Middleware
@@ -656,18 +655,17 @@ if (process.env.NODE_ENV === 'production') {
 }
 
 // Start server
-app.listen(PORT, HOST, () => {
+app.listen(PORT, () => {
   console.log('╔════════════════════════════════════════════╗');
   console.log('║   🚀 Sensor Backend Server Started!       ║');
   console.log('║      (MongoDB Atlas Integrated)            ║');
   console.log('╚════════════════════════════════════════════╝');
-  console.log(`📡 Server URL: http://localhost:${PORT}`);
-  console.log(`🌐 Network URL: http://${HOST === '0.0.0.0' ? '172.16.14.151' : HOST}:${PORT}`);
-  console.log(`📊 Dashboard API: http://localhost:${PORT}/api/sensors/current`);
-  console.log(`🔧 NodeMCU POST to: http://172.16.14.151:${PORT}/api/sensors/data`);
-  console.log(`💚 Health check: http://localhost:${PORT}/api/health`);
-  console.log(`🗄️  Database: ${MONGODB_URI ? 'Configured' : 'NOT CONFIGURED'}`);
-  console.log('\n⏳ Waiting for sensor data...\n');
+  console.log(`📡 Server listening on port: ${PORT}`);
+  console.log(`📊 API: /api/sensors/current`);
+  console.log(`💚 Health check: /api/health`);
+  console.log(`🗄️  Database: ${MONGODB_URI ? 'Connected' : 'NOT CONFIGURED'}`);
+  console.log(`🌍 Environment: ${process.env.NODE_ENV || 'development'}`);
+  console.log('\n⏳ Ready to receive requests...\n');
 });
 
 // Handle shutdown gracefully
