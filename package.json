@@ -11,7 +11,8 @@
     "format": "prettier --write .",
     "backend": "node backend-server.js",
     "backend:prod": "NODE_ENV=production node backend-server.js",
-    "start": "start cmd /k \"node backend-server.js\" && timeout /t 2 /nobreak && npm run dev"
+    "start": "start cmd /k \"node backend-server.js\" && timeout /t 2 /nobreak && npm run dev",
+    "start:prod": "node start-production.js"
   },
   "dependencies": {
     "body-parser": "^2.2.2",

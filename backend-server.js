@@ -4,12 +4,17 @@ import bodyParser from 'body-parser';
 import dotenv from 'dotenv';
 import mongoose from 'mongoose';
 import { spawn } from 'child_process';
+import { fileURLToPath } from 'url';
+import { dirname, join } from 'path';
 import Reading from './models/Reading.js';
 import Device from './models/Device.js';
 import Alert from './models/Alert.js';
 
 // Load environment variables
 dotenv.config();
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
 
 const app = express();
 const PORT = process.env.PORT || 3001;
@@ -620,6 +625,19 @@ app.get('/', (req, res) => {
     }
   });
 });
+
+// Serve static files from dist folder in production
+if (process.env.NODE_ENV === 'production') {
+  const distPath = join(__dirname, 'dist');
+  app.use(express.static(distPath));
+  
+  // Serve index.html for all non-API routes (SPA support)
+  app.get('*', (req, res) => {
+    if (!req.path.startsWith('/api')) {
+      res.sendFile(join(distPath, 'index.html'));
+    }
+  });
+}
 
 // Start server
 app.listen(PORT, HOST, () => {
