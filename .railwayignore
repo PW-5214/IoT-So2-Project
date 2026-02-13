@@ -1,0 +1,12 @@
+# Railway Ignore File (faster deployments)
+node_modules/
+.venv/
+.git/
+dist/
+*.log
+.DS_Store
+.vscode/
+.idea/
+*.local
+.env.local
+.env.development

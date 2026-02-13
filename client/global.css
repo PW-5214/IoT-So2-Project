@@ -1,0 +1,175 @@
+/** @import must precede all other statements */
+@import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap");
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  /**
+   * Industrial IoT Theme
+   * tailwind.config.ts expects the following color variables to be expressed as HSL values.
+   * A different format will require also updating the theme in tailwind.config.ts.
+  */
+  :root {
+    /* Light mode - Clean industrial aesthetic */
+    --background: 210 17% 98%;
+    --foreground: 210 11% 15%;
+
+    --card: 0 0% 100%;
+    --card-foreground: 210 11% 15%;
+
+    --popover: 0 0% 100%;
+    --popover-foreground: 210 11% 15%;
+
+    /* Primary: Deep blue - professional and industrial */
+    --primary: 210 40% 30%;
+    --primary-foreground: 0 0% 100%;
+
+    /* Secondary: Slate gray */
+    --secondary: 210 8% 40%;
+    --secondary-foreground: 0 0% 100%;
+
+    /* Muted: Light gray */
+    --muted: 210 7% 86%;
+    --muted-foreground: 210 7% 50%;
+
+    /* Accent: Cyan/Teal - technology theme */
+    --accent: 190 84% 45%;
+    --accent-foreground: 0 0% 100%;
+
+    /* Destructive: Red for alerts */
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 0 0% 100%;
+
+    /* Border and input */
+    --border: 210 7% 90%;
+    --input: 210 7% 95%;
+    --ring: 190 84% 45%;
+
+    --radius: 0.5rem;
+
+    /* Sidebar - Dark industrial style */
+    --sidebar-background: 210 25% 18%;
+    --sidebar-foreground: 210 5% 90%;
+    --sidebar-primary: 190 84% 45%;
+    --sidebar-primary-foreground: 210 25% 18%;
+    --sidebar-accent: 210 20% 30%;
+    --sidebar-accent-foreground: 190 84% 45%;
+    --sidebar-border: 210 20% 25%;
+    --sidebar-ring: 190 84% 45%;
+
+    /* Status colors */
+    --status-critical: 0 84.2% 60.2%;
+    --status-high: 39 84% 50%;
+    --status-medium: 45 93% 50%;
+    --status-low: 190 84% 45%;
+    --status-good: 150 82% 45%;
+  }
+
+  .dark {
+    --background: 210 25% 10%;
+    --foreground: 210 5% 90%;
+
+    --card: 210 20% 15%;
+    --card-foreground: 210 5% 90%;
+
+    --popover: 210 20% 15%;
+    --popover-foreground: 210 5% 90%;
+
+    --primary: 190 84% 45%;
+    --primary-foreground: 210 25% 18%;
+
+    --secondary: 210 8% 60%;
+    --secondary-foreground: 210 25% 18%;
+
+    --muted: 210 20% 35%;
+    --muted-foreground: 210 5% 70%;
+
+    --accent: 190 84% 50%;
+    --accent-foreground: 210 25% 18%;
+
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 210 25% 18%;
+
+    --border: 210 20% 25%;
+    --input: 210 20% 25%;
+    --ring: 190 84% 45%;
+
+    --sidebar-background: 210 25% 12%;
+    --sidebar-foreground: 210 5% 85%;
+    --sidebar-primary: 190 84% 45%;
+    --sidebar-primary-foreground: 210 25% 12%;
+    --sidebar-accent: 210 20% 28%;
+    --sidebar-accent-foreground: 190 84% 45%;
+    --sidebar-border: 210 15% 22%;
+    --sidebar-ring: 190 84% 45%;
+
+    --status-critical: 0 84.2% 60.2%;
+    --status-high: 39 84% 50%;
+    --status-medium: 45 93% 50%;
+    --status-low: 190 84% 45%;
+    --status-good: 150 82% 45%;
+  }
+
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply bg-background text-foreground;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  }
+
+  :where(p, span, li, h1, h2, h3, h4, h5, h6, a, button, label, td, th) {
+    overflow-wrap: anywhere;
+    word-break: break-word;
+  }
+
+  pre,
+  code {
+    overflow-x: auto;
+    white-space: pre;
+  }
+}
+
+@layer components {
+  /* Card hover effect */
+  .card-hover {
+    @apply hover:shadow-lg hover:border-accent/30 hover:-translate-y-1 transition-all duration-300;
+  }
+
+  /* Gradient backgrounds for visual interest */
+  .gradient-bg {
+    background: linear-gradient(135deg, hsl(var(--primary)) 0%, hsl(var(--accent)) 100%);
+  }
+
+  /* Smooth animations */
+  @keyframes slideIn {
+    from {
+      opacity: 0;
+      transform: translateY(10px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  @keyframes float {
+    0%, 100% {
+      transform: translateY(0);
+    }
+    50% {
+      transform: translateY(-4px);
+    }
+  }
+
+  .animate-slideIn {
+    animation: slideIn 0.5s ease-out;
+  }
+
+  .animate-float {
+    animation: float 3s ease-in-out infinite;
+  }
+}
