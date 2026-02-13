@@ -641,29 +641,46 @@ app.get('/healthz', (req, res) => {
 // Serve static files from dist folder in production
 if (process.env.NODE_ENV === 'production') {
   const distPath = join(__dirname, 'dist');
-  console.log('📁 Serving static files from:', distPath);
+  const indexPath = join(distPath, 'index.html');
   
-  // Serve static files
-  app.use(express.static(distPath));
-  console.log('✅ Static file serving enabled');
+  // Check if dist folder exists
+  const fs = await import('fs');
+  const distExists = fs.existsSync(distPath);
+  const indexExists = fs.existsSync(indexPath);
+  
+  console.log('📁 Dist path:', distPath);
+  console.log('📁 Dist folder exists:', distExists);
+  console.log('📄 Index.html exists:', indexExists);
+  
+  if (distExists) {
+    // Serve static files
+    app.use(express.static(distPath));
+    console.log('✅ Static file serving enabled');
+  } else {
+    console.error('❌ WARNING: dist folder not found! Frontend will not be served.');
+  }
   
   // Serve index.html for all non-API routes (SPA support) - using middleware for compatibility
-  app.use((req, res, next) => {
-    // Skip API and health check routes
-    if (req.path.startsWith('/api') || req.path.startsWith('/healthz')) {
-      return next();
-    }
-    
-    // Serve index.html for all other routes (SPA support)
-    const indexPath = join(distPath, 'index.html');
-    console.log(`📄 Serving SPA: ${req.path} -> ${indexPath}`);
-    res.sendFile(indexPath, (err) => {
-      if (err) {
-        console.error('❌ Error serving index.html:', err);
-        res.status(500).send('Application error');
+  if (indexExists) {
+    app.use((req, res, next) => {
+      // Skip API and health check routes
+      if (req.path.startsWith('/api') || req.path.startsWith('/healthz')) {
+        return next();
       }
+      
+      // Serve index.html for all other routes (SPA support)
+      console.log(`📄 Serving SPA: ${req.path} -> ${indexPath}`);
+      res.sendFile(indexPath, (err) => {
+        if (err) {
+          console.error('❌ Error serving index.html:', err);
+          res.status(500).send('Application error');
+        }
+      });
     });
-  });
+    console.log('✅ SPA routing enabled');
+  } else {
+    console.error('❌ WARNING: index.html not found! SPA routing disabled.');
+  }
 }
 
 // Start server - Railway requires listening on PORT env variable
