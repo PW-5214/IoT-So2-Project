@@ -1,15 +1,14 @@
 [phases.setup]
 nixPkgs = ["nodejs_18"]
-aptPkgs = []
 
 [phases.install]
-cmds = ["npm ci"]
+cmds = ["npm ci --production=false"]
 
 [phases.build]
 cmds = ["npm run build"]
 
 [start]
-cmd = "NODE_ENV=production node backend-server.js"
+cmd = "node backend-server.js"
 
 [variables]
-NPM_CONFIG_PRODUCTION = "false"
+NODE_ENV = "production"

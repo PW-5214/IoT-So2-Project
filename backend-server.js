@@ -18,7 +18,7 @@ const __dirname = dirname(__filename);
 
 const app = express();
 const PORT = process.env.PORT || 3001;
-const HOST = process.env.HOST || '0.0.0.0'; // Listen on all network interfaces
+const HOST = process.env.RAILWAY_ENVIRONMENT ? '0.0.0.0' : (process.env.HOST || '0.0.0.0');
 const MONGODB_URI = process.env.MONGODB_URI;
 
 // Middleware
@@ -58,7 +58,8 @@ mongoose.connect(MONGODB_URI)
   })
   .catch((err) => {
     console.error('❌ MongoDB connection error:', err.message);
-    console.error('💡 Check your MONGODB_URI in .env file');
+    console.error('💡 Server will continue running but data operations will fail');
+    console.error('💡 Check your MONGODB_URI and MongoDB Atlas IP whitelist');
   });
 
 // Helper function to check thresholds and create alerts
@@ -629,12 +630,25 @@ app.get('/', (req, res) => {
 // Serve static files from dist folder in production
 if (process.env.NODE_ENV === 'production') {
   const distPath = join(__dirname, 'dist');
-  app.use(express.static(distPath));
+  console.log('📁 Serving static files from:', distPath);
+  
+  // Check if dist folder exists
+  try {
+    app.use(express.static(distPath));
+    console.log('✅ Static file serving enabled');
+  } catch (error) {
+    console.error('❌ Error setting up static files:', error);
+  }
   
   // Serve index.html for all non-API routes (SPA support)
   app.use((req, res, next) => {
     if (!req.path.startsWith('/api')) {
-      res.sendFile(join(distPath, 'index.html'));
+      try {
+        res.sendFile(join(distPath, 'index.html'));
+      } catch (error) {
+        console.error('❌ Error serving index.html:', error);
+        next(error);
+      }
     } else {
       next();
     }
