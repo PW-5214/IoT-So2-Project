@@ -611,26 +611,28 @@ app.get('/api/sensors/predictions', async (req, res) => {
   }
 });
 
-// Root endpoint
-app.get('/', (req, res) => {
-  res.json({
-    message: 'IoT Sensor Backend API with MongoDB Atlas',
-    version: '2.0.0',
-    database: mongoose.connection.readyState === 1 ? 'Connected' : 'Disconnected',
-    endpoints: {
-      'POST /api/sensors/data': 'NodeMCU posts sensor data',
-      'GET /api/sensors/current': 'Get latest sensor readings',
-      'GET /api/sensors/history': 'Get historical data (params: deviceId, hours, limit)',
-      'GET /api/sensors/stats': 'Get aggregated statistics (params: deviceId, hours)',
-      'GET /api/sensors/predictions': 'Get LSTM predictions (params: deviceId, steps)',
-      'GET /api/alerts': 'Get alerts (params: deviceId, acknowledged, limit)',
-      'POST /api/alerts/:alertId/acknowledge': 'Acknowledge an alert',
-      'GET /api/devices': 'Get all devices',
-      'PUT /api/devices/:deviceId': 'Update device settings and thresholds',
-      'GET /api/health': 'Server health check'
-    }
+// Root endpoint - only in development mode (production serves frontend)
+if (process.env.NODE_ENV !== 'production') {
+  app.get('/', (req, res) => {
+    res.json({
+      message: 'IoT Sensor Backend API with MongoDB Atlas',
+      version: '2.0.0',
+      database: mongoose.connection.readyState === 1 ? 'Connected' : 'Disconnected',
+      endpoints: {
+        'POST /api/sensors/data': 'NodeMCU posts sensor data',
+        'GET /api/sensors/current': 'Get latest sensor readings',
+        'GET /api/sensors/history': 'Get historical data (params: deviceId, hours, limit)',
+        'GET /api/sensors/stats': 'Get aggregated statistics (params: deviceId, hours)',
+        'GET /api/sensors/predictions': 'Get LSTM predictions (params: deviceId, steps)',
+        'GET /api/alerts': 'Get alerts (params: deviceId, acknowledged, limit)',
+        'POST /api/alerts/:alertId/acknowledge': 'Acknowledge an alert',
+        'GET /api/devices': 'Get all devices',
+        'PUT /api/devices/:deviceId': 'Update device settings and thresholds',
+        'GET /api/health': 'Server health check'
+      }
+    });
   });
-});
+}
 
 // Add a simple root health check for Railway
 app.get('/healthz', (req, res) => {
