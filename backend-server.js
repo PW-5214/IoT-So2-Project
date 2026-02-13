@@ -647,18 +647,22 @@ if (process.env.NODE_ENV === 'production') {
   app.use(express.static(distPath));
   console.log('✅ Static file serving enabled');
   
-  // Serve index.html for all non-API routes (SPA support)
-  app.get('/*', (req, res) => {
-    if (!req.path.startsWith('/api') && !req.path.startsWith('/healthz')) {
-      const indexPath = join(distPath, 'index.html');
-      console.log(`📄 Serving SPA: ${req.path} -> ${indexPath}`);
-      res.sendFile(indexPath, (err) => {
-        if (err) {
-          console.error('❌ Error serving index.html:', err);
-          res.status(500).send('Application error');
-        }
-      });
+  // Serve index.html for all non-API routes (SPA support) - using middleware for compatibility
+  app.use((req, res, next) => {
+    // Skip API and health check routes
+    if (req.path.startsWith('/api') || req.path.startsWith('/healthz')) {
+      return next();
     }
+    
+    // Serve index.html for all other routes (SPA support)
+    const indexPath = join(distPath, 'index.html');
+    console.log(`📄 Serving SPA: ${req.path} -> ${indexPath}`);
+    res.sendFile(indexPath, (err) => {
+      if (err) {
+        console.error('❌ Error serving index.html:', err);
+        res.status(500).send('Application error');
+      }
+    });
   });
 }
 
