@@ -626,46 +626,57 @@ app.get('/', (req, res) => {
   });
 });
 
+// Add a simple root health check for Railway
+app.get('/healthz', (req, res) => {
+  res.status(200).send('OK');
+});
+
 // Serve static files from dist folder in production
 if (process.env.NODE_ENV === 'production') {
   const distPath = join(__dirname, 'dist');
   console.log('📁 Serving static files from:', distPath);
   
-  // Check if dist folder exists
-  try {
-    app.use(express.static(distPath));
-    console.log('✅ Static file serving enabled');
-  } catch (error) {
-    console.error('❌ Error setting up static files:', error);
-  }
+  // Serve static files
+  app.use(express.static(distPath));
+  console.log('✅ Static file serving enabled');
   
   // Serve index.html for all non-API routes (SPA support)
-  app.use((req, res, next) => {
-    if (!req.path.startsWith('/api')) {
-      try {
-        res.sendFile(join(distPath, 'index.html'));
-      } catch (error) {
-        console.error('❌ Error serving index.html:', error);
-        next(error);
-      }
-    } else {
-      next();
+  app.get('*', (req, res) => {
+    if (!req.path.startsWith('/api') && !req.path.startsWith('/healthz')) {
+      const indexPath = join(distPath, 'index.html');
+      console.log(`📄 Serving SPA: ${req.path} -> ${indexPath}`);
+      res.sendFile(indexPath, (err) => {
+        if (err) {
+          console.error('❌ Error serving index.html:', err);
+          res.status(500).send('Application error');
+        }
+      });
     }
   });
 }
 
-// Start server
-app.listen(PORT, () => {
+// Start server - Railway requires explicit 0.0.0.0 binding
+const server = app.listen(PORT, '0.0.0.0', () => {
   console.log('╔════════════════════════════════════════════╗');
   console.log('║   🚀 Sensor Backend Server Started!       ║');
   console.log('║      (MongoDB Atlas Integrated)            ║');
   console.log('╚════════════════════════════════════════════╝');
   console.log(`📡 Server listening on port: ${PORT}`);
+  console.log(`📡 Binding address: 0.0.0.0:${PORT}`);
   console.log(`📊 API: /api/sensors/current`);
   console.log(`💚 Health check: /api/health`);
   console.log(`🗄️  Database: ${MONGODB_URI ? 'Connected' : 'NOT CONFIGURED'}`);
   console.log(`🌍 Environment: ${process.env.NODE_ENV || 'development'}`);
   console.log('\n⏳ Ready to receive requests...\n');
+});
+
+// Error handling for server
+server.on('error', (error) => {
+  console.error('❌ Server error:', error);
+  if (error.code === 'EADDRINUSE') {
+    console.error(`Port ${PORT} is already in use`);
+  }
+  process.exit(1);
 });
 
 // Handle shutdown gracefully
