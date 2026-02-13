@@ -18,7 +18,7 @@ git add .
 git commit -m "Ready for Railway deployment"
 
 # Create repo on GitHub, then:
-git remote add origin https://github.com/YOUR_USERNAME/YOUR_REPO_NAME.git
+git remote add origin https://github.com/PW-5214/IoT-So2-Project.git
 git branch -M main
 git push -u origin main
 ```
