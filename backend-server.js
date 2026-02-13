@@ -652,24 +652,24 @@ if (process.env.NODE_ENV === 'production') {
   console.log('📁 Dist folder exists:', distExists);
   console.log('📄 Index.html exists:', indexExists);
   
-  if (distExists) {
-    // Serve static files
-    app.use(express.static(distPath));
+  if (distExists && indexExists) {
+    // Serve static files (JS, CSS, images, etc.) with proper configuration
+    app.use(express.static(distPath, {
+      index: false,  // Don't automatically serve index.html yet
+      fallthrough: true  // Let other middleware handle if file not found
+    }));
     console.log('✅ Static file serving enabled');
-  } else {
-    console.error('❌ WARNING: dist folder not found! Frontend will not be served.');
-  }
-  
-  // Serve index.html for all non-API routes (SPA support) - using middleware for compatibility
-  if (indexExists) {
+    
+    // Serve index.html for all non-API routes (SPA support)
     app.use((req, res, next) => {
       // Skip API and health check routes
       if (req.path.startsWith('/api') || req.path.startsWith('/healthz')) {
+        console.log(`⏭️  Skipping SPA for: ${req.path}`);
         return next();
       }
       
-      // Serve index.html for all other routes (SPA support)
-      console.log(`📄 Serving SPA: ${req.path} -> ${indexPath}`);
+      // Serve index.html for all other routes
+      console.log(`📄 Serving index.html for: ${req.path}`);
       res.sendFile(indexPath, (err) => {
         if (err) {
           console.error('❌ Error serving index.html:', err);
@@ -679,7 +679,7 @@ if (process.env.NODE_ENV === 'production') {
     });
     console.log('✅ SPA routing enabled');
   } else {
-    console.error('❌ WARNING: index.html not found! SPA routing disabled.');
+    console.error('❌ WARNING: dist folder or index.html not found! Frontend will not be served.');
   }
 }
 
