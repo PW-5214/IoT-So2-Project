@@ -8,6 +8,7 @@
     "restartPolicyType": "ON_FAILURE",
     "restartPolicyMaxRetries": 10,
     "healthcheckPath": "/healthz",
-    "healthcheckTimeout": 100
+    "healthcheckTimeout": 300,
+    "startCommand": "node backend-server.js"
   }
 }
