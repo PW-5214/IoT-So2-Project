@@ -648,7 +648,7 @@ if (process.env.NODE_ENV === 'production') {
   console.log('✅ Static file serving enabled');
   
   // Serve index.html for all non-API routes (SPA support)
-  app.get('*', (req, res) => {
+  app.get('/*', (req, res) => {
     if (!req.path.startsWith('/api') && !req.path.startsWith('/healthz')) {
       const indexPath = join(distPath, 'index.html');
       console.log(`📄 Serving SPA: ${req.path} -> ${indexPath}`);
